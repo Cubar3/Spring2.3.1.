@@ -10,8 +10,8 @@ import web.service.UserService;
 @Controller
 public class UserController {
 
-    private UserService userService;
-    @Autowired
+    private final UserService userService;
+
     public UserController(UserService userService) {
         this.userService = userService;
     }
@@ -53,5 +53,4 @@ public class UserController {
         userService.updateUser(user);
         return "redirect:/";
     }
-
 }

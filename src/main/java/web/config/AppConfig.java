@@ -19,16 +19,17 @@ import javax.sql.DataSource;
 import java.util.Properties;
 
 
-    @Configuration
-    @PropertySource("classpath:db.properties")
-    @EnableTransactionManagement
-    @ComponentScan(value = "web")
-    public class AppConfig {
+@Configuration
+@PropertySource("classpath:db.properties")
+@EnableTransactionManagement
+@ComponentScan(value = "web")
+public class AppConfig {
 
-    @Autowired
-    private Environment env;
+    private final Environment env;
 
-
+    public AppConfig(Environment env) {
+        this.env = env;
+    }
 
     @Bean
     public DataSource getDataSource() {
@@ -41,30 +42,30 @@ import java.util.Properties;
     }
 
 
-        @Bean
-        public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
-            LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
-            entityManagerFactoryBean.setDataSource(getDataSource());
-            entityManagerFactoryBean.setPackagesToScan("web");
-            entityManagerFactoryBean.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
-            entityManagerFactoryBean.setJpaProperties(additionalProperties());
-            return entityManagerFactoryBean;
-        }
-
-        private Properties additionalProperties() {
-            Properties properties = new Properties();
-            properties.put("hibernate.show_sql", env.getProperty("hibernate.show_sql"));
-            properties.put("hibernate.hbm2ddl.auto", env.getProperty("hibernate.hbm2ddl.auto"));
-            properties.put("hibernate.dialect", env.getProperty("hibernate.dialect"));
-            properties.put("hibernate.format_sql", env.getProperty("hibernate.format_sql"));
-
-            return properties;
-        }
-
-        @Bean
-        public PlatformTransactionManager getTransactionManager() {
-            JpaTransactionManager transactionManager = new JpaTransactionManager();
-            transactionManager.setEntityManagerFactory(entityManagerFactory().getObject());
-            return transactionManager;
-        }
+    @Bean
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
+        LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
+        entityManagerFactoryBean.setDataSource(getDataSource());
+        entityManagerFactoryBean.setPackagesToScan("web");
+        entityManagerFactoryBean.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
+        entityManagerFactoryBean.setJpaProperties(additionalProperties());
+        return entityManagerFactoryBean;
     }
+
+    private Properties additionalProperties() {
+        Properties properties = new Properties();
+        properties.put("hibernate.show_sql", env.getProperty("hibernate.show_sql"));
+        properties.put("hibernate.hbm2ddl.auto", env.getProperty("hibernate.hbm2ddl.auto"));
+        properties.put("hibernate.dialect", env.getProperty("hibernate.dialect"));
+        properties.put("hibernate.format_sql", env.getProperty("hibernate.format_sql"));
+
+        return properties;
+    }
+
+    @Bean
+    public PlatformTransactionManager getTransactionManager() {
+        JpaTransactionManager transactionManager = new JpaTransactionManager();
+        transactionManager.setEntityManagerFactory(entityManagerFactory().getObject());
+        return transactionManager;
+    }
+}
